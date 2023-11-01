@@ -33,8 +33,7 @@ jobs:
       - name: Run tests
         run: npm run test
 
-      - name: Add SSH Key to Agent
-        run: ssh-add <(echo "${{ secrets.AWS_KEY }}")
+     
 
       - name: SSH Remote Commands
         uses: appleboy/ssh-action@v0.1.2
