@@ -52,7 +52,7 @@ name:
 Install Node.js dependencies
         run: npm ci
       - name: Build project
-        run: npm run build --if-present
+        run: npm run build
       - name: Run tests
         uses: actions/github-script@v5
         with:
@@ -65,8 +65,4 @@ Install Node.js dependencies
         run: |
           echo "$PRIVATE_KEY" > key.pem && chmod 600 key.pem
           ssh -o StrictHostKeyChecking=no -i key.pem ${USER_NAME}@${HOSTNAME} '
-            cd /home/ubuntu/express
-            git pull
-            npm install
-            pm2 start npm -- start
-          '
+      
