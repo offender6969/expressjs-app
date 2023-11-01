@@ -2,7 +2,8 @@ name: Deploy
 
 on:
   push:
-    branches: [ test]
+    branches:
+      - test
 
 jobs:
   Deploy:
@@ -10,13 +11,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2 
+      - name: Checkout code
+        uses: actions/checkout@v2
+
       - name: Build & Deploy
         env:
-            PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-            HOSTNAME: ${{secrets.SSH_HOST}}
-            USER_NAME: ${{secrets.USER_NAME}}
+          PRIVATE_KEY: ${{ secrets.AWS_KEY }}
+          HOSTNAME: ${{ secrets.AWS_IP }}
+          USER_NAME: ${{ secrets.AWS_UNAME }}
 
         run: |
-          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+          echo "$PRIVATE_KEY" > private_key
+          chmod 600 private_key
           ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
+            # Your commands to deploy here
+          '
