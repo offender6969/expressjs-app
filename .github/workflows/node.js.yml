@@ -1,66 +1,44 @@
-name: Node.js CI/CD
+# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Node.js CI
 
 on:
   push:
-    branches:
-      - test
+    branches: [ main ]
   pull_request:
-    branches:
-      - test
+    branches: [ main ]
 
 jobs:
-  test:
+  build:
+
     runs-on: ubuntu-latest
+
     strategy:
       matrix:
-        node-version: [16.x]
+        node-version: [12.x]
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node-version }}
-      - run: npm ci
-      - run: npm test
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: npm ci
+    - run: npm run build --if-present
+    - run: npm run test:staging
+    - name: SSH Remote Commands
+      uses: appleboy/ssh-action@v0.1.2
+      with:
+        key: ${{secrets.AWS_KEY
+        host: ${{AWS_IP}}
+        username: ${{aws_UNAME}}
+        script: |
+          pm2 delete all
+          git clone https://github.com/offender6969/expressjs-app /express
+          cd /home/ubuntu/express
+          git pull
+           npm install
+          pm2 start npm -- start
 
-  build:
-    runs-on: ubuntu-latest
-    needs: test
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: 14 # Use the Node.js version you require
-      - name: Install dependencies
-        run: npm install
-      - name: Build
-        run: npm run build # Replace with the actual build command for your application
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Configure SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan ubuntu@ >> ubuntu@3.90.183.196: ~/.ssh/known_hosts
-          ssh -o StrictHostKeyChecking=no ubuntu@3.90.183.196 "echo SSH is properly configured"
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.AWS_PASS }}
-
-      - name: Copy app to EC2
-        run: |
-          rsync -av --exclude='node_modules' --exclude='test' --exclude='.*' ./ ubuntu@3.90.183.196:/home/ubuntu
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.AWS_PASS }}
-
-      - name: SSH into EC2 and deploy
-        run: |
-          ssh ubuntu@3.90.183.196 "cd /home && npm install && npm start"
+      
