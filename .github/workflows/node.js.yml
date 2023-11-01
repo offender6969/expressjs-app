@@ -33,19 +33,18 @@ jobs:
       - name: Run tests
         run: npm run test
 
- 
-      - name: Deploy to EC2  
-        env:
-            PRIVATE_KEY: ${{ secrets.AWS_KEY }}
-            HOSTNAME: ${{ secrets.AWS_IP }}
-            USER_NAME: ${{ secrets.AWS_USERNAME }}
-        run: |
-          echo "$PRIVATE_KEY" > key.pem && chmod 600 key.pem
-          ssh -o StrictHostKeyChecking=no -i key.pem ${USER_NAME}@${HOSTNAME} '
-          script: |
-            pm2 delete all
-            git clone https://github.com/offender6969/expressjs-app /express
-            cd /home/ubuntu/express
-            git pull
-            npm install
-            pm2 start npm -- start
+  - name: Deploy to EC2
+    env:
+      PRIVATE_KEY: ${{ secrets.AWS_KEY }}
+      HOSTNAME: ${{ secrets.AWS_IP }}
+      USER_NAME: ${{ secrets.AWS_USERNAME }}
+    run: |
+      echo "$PRIVATE_KEY" > key.pem && chmod 600 key.pem
+      ssh -o StrictHostKeyChecking=no -i key.pem ${USER_NAME}@${HOSTNAME} '
+        pm2 delete all
+        git clone https://github.com/offender6969/expressjs-app /express
+        cd /home/ubuntu/express
+        git pull
+        npm install
+        pm2 start npm -- start
+      '
