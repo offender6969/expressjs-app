@@ -50,14 +50,14 @@ jobs:
           mkdir -p ~/.ssh
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan your-ec2-ip >> ~/.ssh/known_hosts
+          ssh-keyscan ubuntu@ >> ubuntu@3.90.183.196: ~/.ssh/known_hosts
           ssh -o StrictHostKeyChecking=no ubuntu@3.90.183.196 "echo SSH is properly configured"
         env:
           SSH_PRIVATE_KEY: ${{ secrets.AWS_PASS }}
 
       - name: Copy app to EC2
         run: |
-          rsync -av --exclude='node_modules' --exclude='test' --exclude='.*' ./ ubuntu@3.90.183.196:/home
+          rsync -av --exclude='node_modules' --exclude='test' --exclude='.*' ./ ubuntu@3.90.183.196:/home/ubuntu
         env:
           SSH_PRIVATE_KEY: ${{ secrets.AWS_PASS }}
 
