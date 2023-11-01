@@ -33,7 +33,7 @@ jobs:
       - name: Run tests
         run: npm run test
 
-  - name: Deploy to EC2
+      - name: Deploy to EC2
     env:
       PRIVATE_KEY: ${{ secrets.AWS_KEY }}
       HOSTNAME: ${{ secrets.AWS_IP }}
