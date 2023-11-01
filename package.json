@@ -1,0 +1,17 @@
+{
+  "name": "github-actions-test",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "test": "ava"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "",
+  "devDependencies": {
+    "ava": "^5.1.0"
+  },
+  "dependencies": {
+    "eva": "^1.0.0"
+  }
+}
