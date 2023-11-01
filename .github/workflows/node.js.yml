@@ -30,9 +30,9 @@ jobs:
     - name: SSH Remote Commands
       uses: appleboy/ssh-action@v0.1.2
       with:
-        key: ${{secrets.AWS_KEY
+        key: ${{secrets.AWS_KEY}}
         host: ${{AWS_IP}}
-        username: ${{aws_UNAME}}
+        username: ${{AWS_UNAME}}
         script: |
           pm2 delete all
           git clone https://github.com/offender6969/expressjs-app /express
