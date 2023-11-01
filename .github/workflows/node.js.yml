@@ -1,33 +1,32 @@
 name: Node.js CI with SSH Deploy
+
 on:
-  push:
-    branches:
-      - test
-  pull_request:
-    branches:
-      - test
+  push: { branches: [master] }
+
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [16.x, 18.x]
-    steps:
-      - name: Checkout code
-        uses:
+
+  
+build:
+
+    
+runs-on:
+ 
+ubuntu-latest
+
+
+    
+steps:
+
+      
+-
+ 
+uses:
  
 actions/checkout@v2
 
       
 -
  
-name:
- 
-Setup
- 
-Node.js
-
-        
 uses:
  
 actions/setup-node@v2
@@ -38,31 +37,33 @@ with:
           
 node-version:
  
-${{
- 
-matrix.node-version
- 
-}}
+16.x
 
       
 -
  
-name:
+run:
  
-Install Node.js dependencies
-        run: npm ci
-      - name: Build project
-        run: npm run build
-      - name: Run tests
-        uses: actions/github-script@v5
-        with:
-          script: npm run test
-      - name: Deploy to EC2
-        env:
+npm
+ 
+install
+
+      
+-
+ 
+run:
+ 
+npm run build
+      - run: npm run test
+      - env:
           PRIVATE_KEY: ${{ secrets.AWS_KEY }}
           HOSTNAME: ${{ secrets.AWS_IP }}
           USER_NAME: ${{ secrets.AWS_USERNAME }}
         run: |
           echo "$PRIVATE_KEY" > key.pem && chmod 600 key.pem
           ssh -o StrictHostKeyChecking=no -i key.pem ${USER_NAME}@${HOSTNAME} '
-      
+            cd /home/ubuntu/express
+            git pull
+            npm install
+            pm2 start npm -- start
+          '
