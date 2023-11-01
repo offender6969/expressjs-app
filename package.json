@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "test": "ava"
+    "test": "ava",
+    "start": "node app.js",
+    "build": "echo 'No build step required for this project'"
   },
   "keywords": [],
   "author": "",
@@ -14,9 +16,4 @@
   "dependencies": {
     "eva": "^1.0.0"
   }
-}
-
-"scripts": {
-  "start": "node app.js",
-  "build": "echo 'No build step required for this project'"
 }
