@@ -1,4 +1,4 @@
-name: Node.js CI
+name: Node.js CI/CD
 
 on:
   push:
@@ -38,3 +38,29 @@ jobs:
         run: npm install
       - name: Build
         run: npm run build # Replace with the actual build command for your application
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan your-ec2-ip >> ~/.ssh/known_hosts
+          ssh -o StrictHostKeyChecking=no ubuntu@3.90.183.196 "echo SSH is properly configured"
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.AWS_PASS }}
+
+      - name: Copy app to EC2
+        run: |
+          rsync -av --exclude='node_modules' --exclude='test' --exclude='.*' ./ ubuntu@3.90.183.196:/home
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.AWS_PASS }}
+
+      - name: SSH into EC2 and deploy
+        run: |
+          ssh ubuntu@3.90.183.196 "cd /home && npm install && npm start"
