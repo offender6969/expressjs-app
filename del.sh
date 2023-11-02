@@ -1,4 +1,4 @@
-GNU nano 6.2                                                                                                                                                                                           
+                                                                                                                                                                                 
 #!/bin/bash
 
 # Define the name of the container
