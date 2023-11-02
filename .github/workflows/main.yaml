@@ -45,14 +45,13 @@ jobs:
         HOSTNAME: ${{ secrets.HOST_IP }}
         USER_NAME: ${{ secrets.HOST_USER }}
       run: |
-        chmod +x del.sh
-        ./del.sh
-
+     
         # Continue with the rest of the deployment steps
         echo "$PRIVATE_KEY" > key.pem && chmod 600 key.pem
         ssh -o StrictHostKeyChecking=no -i key.pem ${USER_NAME}@${HOSTNAME} '       
           cd ~
-                
+             chmod +x del.sh
+            ./del.sh      
           docker pull iamdivye/express-js:latest
           docker run -d -p 4000:4000 --name express-app iamdivye/express-js:latest
         '
