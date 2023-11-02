@@ -48,11 +48,10 @@ jobs:
       run: |
         echo "$PRIVATE_KEY" > key.pem && chmod 600 key.pem
         ssh -o StrictHostKeyChecking=no -i key.pem ${USER_NAME}@${HOSTNAME} '
-          # Check if the container exists before stopping and removing
-          if [ "$(docker ps -q -f name=express-app)" ]; then
+        
             docker stop express-app
             docker rm express-app
-          fi
+          
 
           cd ~
 
