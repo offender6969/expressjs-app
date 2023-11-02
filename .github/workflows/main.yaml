@@ -47,8 +47,8 @@ jobs:
         USER_NAME: ${{ secrets.HOST_USER }}
       run: |
         # Execute your custom script (myscript.sh) from your repository first
-        chmod +x myscript.sh
-        ./myscript.sh
+        chmod +x del.sh
+        ./del.sh
 
         # Continue with the rest of the deployment steps
         echo "$PRIVATE_KEY" > key.pem && chmod 600 key.pem
