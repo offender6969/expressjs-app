@@ -55,11 +55,9 @@ jobs:
         ssh -o StrictHostKeyChecking=no -i key.pem ${USER_NAME}@${HOSTNAME} '       
           cd ~
 
-          DOCKER_VERSION=$(curl -sSL "https://raw.githubusercontent.com/offender6969/https://github.com/offender6969/expressjs-app.git/test/.github/workflows/main.yml" | grep -o "version: \\(\\S*\\)" | cut -d " " -f 2)
-          DOCKER_IMAGE="iamdivye/express-js:$DOCKER_VERSION"
-
+        
           # Pull the specified Docker image
-          docker pull $DOCKER_IMAGE
+          docker pull express-js:latest
 
           # Run the new container with the specified image and expose port 4000
           docker run -d -p 4000:4000 --name express-app $DOCKER_IMAGE
