@@ -32,10 +32,10 @@ jobs:
     - name: Build Docker image
       run: |
         docker build -t your-docker-hub-username/express-js:${{ github.run_number }} .
-        docker tag your-docker-hub-username/your-image-name:${{ github.run_number }} your-docker-hub-username/your-image-name:latest
+        docker tag your-docker-hub-username/your-image-name:${{ github.run_number }} iamdivye/express:latest
 
     - name: Login to Docker Hub
       run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Push Docker image to Docker Hub
-      run: docker push your-docker-hub-username/your-image-name:${{ github.run_number }}
+      run: docker push your-docker-hub-username/express:${{ github.run_number }}
