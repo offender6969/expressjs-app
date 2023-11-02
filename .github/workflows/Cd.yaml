@@ -22,6 +22,6 @@ jobs:
           echo "$PRIVATE_KEY" > key.pem
           chmod 600 key.pem
           ssh -o StrictHostKeyChecking=no -i key.pem ${USER_NAME}@${HOSTNAME} '
-            cd /path/to/remote/directory
-            # Your remote commands go here
+            cd /home/ubuntu
+            mkdir a 
           '
