@@ -46,13 +46,10 @@ jobs:
         HOSTNAME: ${{ secrets.HOST_IP }}
         USER_NAME: ${{ secrets.HOST_USER }}
       run: |
+        chmod +x myscript.sh
+        ./myscript.sh
         echo "$PRIVATE_KEY" > key.pem && chmod 600 key.pem
-        ssh -o StrictHostKeyChecking=no -i key.pem ${USER_NAME}@${HOSTNAME} '
-        
-            docker stop express-app
-            docker rm express-app
-          
-
+        ssh -o StrictHostKeyChecking=no -i key.pem ${USER_NAME}@${HOSTNAME} '       
           cd ~
 
           DOCKER_VERSION=$(curl -sSL "https://raw.githubusercontent.com/offender6969/https://github.com/offender6969/expressjs-app.git/test/.github/workflows/main.yml" | grep -o "version: \\(\\S*\\)" | cut -d " " -f 2)
