@@ -25,5 +25,5 @@ jobs:
         run: |
           echo "$PRIVATE_KEY" > key.pem && chmod 600 key.pem
           ssh -o StrictHostKeyChecking=no -i key.pem ${USER_NAME}@${HOSTNAME} '
-            cd /home/ubuntu && mkdir testgithubaction  
+            cd /home/ubuntu && mkdir testgithub
           '
