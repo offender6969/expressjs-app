@@ -32,4 +32,3 @@ jobs:
       run: |
         echo "$PRIVATE_KEY" > key.pem && chmod 600 key.pem
         scp -i key.pem -o StrictHostKeyChecking=no -r dist/ ${USER_NAME}@${HOSTNAME}:/path/to/destination  # Copy your build output to the EC2 instance
-
