@@ -1,34 +1,41 @@
-name: Build and Deploy to EC2
+name: Test, Build, and Push Docker Image
 
 on:
   push:
     branches:
-      - test  # Trigger the workflow when pushing to the main branch
+      - main
 
 jobs:
-  build-and-deploy:
+  test-build-push:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        node-version: [ 16.x]
+
     steps:
-    - name: Checkout Repository
+    - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up Node.js
+    - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
       with:
-        node-version: 16
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
 
-    - name: Install Dependencies
-      run: npm install
+    - name: Install dependencies
+      run: npm ci
 
-    - name: Build the Application
-      run: npm run build  # Replace with your build command
+    - name: Run tests
+      run: npm test
 
-    - name: Deploy to EC2
-      env:
-        PRIVATE_KEY: ${{ secrets.SSH_KEY }}
-        HOSTNAME: ${{ secrets.HOST_IP }}
-        USER_NAME: ${{ secrets.HOST_USER }}
+    - name: Build Docker image
       run: |
-        echo "$PRIVATE_KEY" > key.pem && chmod 600 key.pem
-        scp -i key.pem -o StrictHostKeyChecking=no -r dist/ ${USER_NAME}@${HOSTNAME}:/path/to/destination  # Copy your build output to the EC2 instance
+        docker build -t your-docker-hub-username/your-image-name:${{ github.run_number }} .
+        docker tag your-docker-hub-username/your-image-name:${{ github.run_number }} your-docker-hub-username/your-image-name:latest
+
+    - name: Login to Docker Hub
+      run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Push Docker image to Docker Hub
+      run: docker push your-docker-hub-username/your-image-name:${{ github.run_number }}
