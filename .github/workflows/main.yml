@@ -1,17 +1,21 @@
 name: Deploy to Docker Hub
 
 on:
+  label:
+    types: [created, edited]
   push:
     branches:
-      - test
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    
 
     steps:
+
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Deploy to EC2
         env:
@@ -19,9 +23,7 @@ jobs:
           HOSTNAME: ${{ secrets.HOST_IP }}
           USER_NAME: ${{ secrets.HOST_USER }}
         run: |
-          echo "$PRIVATE_KEY" > key.pem
-          chmod 600 key.pem
+          echo "$PRIVATE_KEY" > key.pem && chmod 600 key.pem
           ssh -o StrictHostKeyChecking=no -i key.pem ${USER_NAME}@${HOSTNAME} '
-            cd /home/ubuntu
-            mkdir a 
+            cd /home/ubuntu && mkdir testgithubaction  
           '
