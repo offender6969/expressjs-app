@@ -1,34 +1,27 @@
-name: Deploy to EC2
+name: Deploy to Docker Hub
 
 on:
   push:
     branches:
-      - main
+      - test
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-    - name: Configure SSH
-      run: |
-        mkdir -p ~/.ssh
-        echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan your-ec2-ip >> ~/.ssh/known_hosts
-        ssh -o StrictHostKeyChecking=no ubuntu@3.90.183.196 "echo SSH is properly configured"
-      env:
-        SSH_PRIVATE_KEY: ${{ secrets.AWS_PASS }}
-
-    - name: Copy app to EC2
-      run: |
-        rsync -av --exclude='node_modules' --exclude='test' --exclude='.*' ./ubuntu@3.90.183.196:/home
-      env:
-        SSH_PRIVATE_KEY: ${{ secrets.AWS_PASS}}
-
-    - name: SSH into EC2 and deploy
-      run: |
-        ssh ubuntu@3.90.183.196 "cd /home && npm install && npm start"
+      - name: Deploy to EC2
+        env:
+          PRIVATE_KEY: ${{ secrets.SSH_KEY }}
+          HOSTNAME: ${{ secrets.HOST_IP }}
+          USER_NAME: ${{ secrets.HOST_USER }}
+        run: |
+          echo "$PRIVATE_KEY" > key.pem
+          chmod 600 key.pem
+          ssh -o StrictHostKeyChecking=no -i key.pem ${USER_NAME}@${HOSTNAME} '
+            cd /home/ubuntu
+            mkdir a 
+          '
