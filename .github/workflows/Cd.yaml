@@ -1,4 +1,4 @@
-name: Deploy
+name: Deploy to Docker Hub
 
 on:
   push:
@@ -6,23 +6,22 @@ on:
       - test
 
 jobs:
-  Deploy:
-    name: Deploy to EC2
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      - name: Build & Deploy
+      - name: Deploy to EC2
         env:
-          PRIVATE_KEY: ${{ secrets.AWS_KEY }}
-          HOSTNAME: ${{ secrets.AWS_IP }}
-          USER_NAME: ${{ secrets.AWS_UNAME }}
-
+          PRIVATE_KEY: ${{ secrets.SSH_KEY }}
+          HOSTNAME: ${{ secrets.HOST_IP }}
+          USER_NAME: ${{ secrets.HOST_USER }}
         run: |
-          echo "$PRIVATE_KEY" > private_key
-          chmod 600 private_key
-          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
-            # Your commands to deploy here
+          echo "$PRIVATE_KEY" > key.pem
+          chmod 600 key.pem
+          ssh -o StrictHostKeyChecking=no -i key.pem ${USER_NAME}@${HOSTNAME} '
+            cd /path/to/remote/directory
+            # Your remote commands go here
           '
