@@ -31,14 +31,13 @@ jobs:
 
     - name: Build Docker image
       run: |
-        docker build -t iamdivye/express-js:${{ github.run_number }} .
-        docker tag iamdivye/express-js:${{ github.run_number }} iamdivye/express-js:latest
-
+        docker build -t iamdivye/express-js:latest .
+        
     - name: Login to Docker Hub
       run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Push Docker image to Docker Hub
-      run: docker push iamdivye/express-js:${{ github.run_number }}
+      run: docker push iamdivye/express-js:latest
 
     - name: Deploy to EC2
       env:
@@ -46,7 +45,6 @@ jobs:
         HOSTNAME: ${{ secrets.HOST_IP }}
         USER_NAME: ${{ secrets.HOST_USER }}
       run: |
-        # Execute your custom script (myscript.sh) from your repository first
         chmod +x del.sh
         ./del.sh
 
@@ -54,11 +52,7 @@ jobs:
         echo "$PRIVATE_KEY" > key.pem && chmod 600 key.pem
         ssh -o StrictHostKeyChecking=no -i key.pem ${USER_NAME}@${HOSTNAME} '       
           cd ~
-
-        
-          # Pull the specified Docker image
-          docker pull express-js:latest
-
-          # Run the new container with the specified image and expose port 4000
-          docker run -d -p 4000:4000 --name express-app $DOCKER_IMAGE
+                
+          docker pull iamdivye/express-js:latest
+          docker run -d -p 4000:4000 --name express-app iamdivye/express-js:latest
         '
