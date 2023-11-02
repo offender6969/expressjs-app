@@ -11,7 +11,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [ 16.x]
+        node-version: [16.x]
 
     steps:
     - name: Checkout code
@@ -32,10 +32,35 @@ jobs:
     - name: Build Docker image
       run: |
         docker build -t iamdivye/express-js:${{ github.run_number }} .
-        docker tag iamdivye/express-js:${{ github.run_number }} iamdivye/express:latest
+        docker tag iamdivye/express-js:${{ github.run_number }} iamdivye/express-js:latest
 
     - name: Login to Docker Hub
       run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Push Docker image to Docker Hub
       run: docker push iamdivye/express-js:${{ github.run_number }}
+
+    - name: Deploy to EC2
+    env:
+      PRIVATE_KEY: ${{ secrets.SSH_KEY }}
+      HOSTNAME: ${{ secrets.HOST_IP }}
+      USER_NAME: ${{ secrets.HOST_USER }}
+      run: |
+       echo "$PRIVATE_KEY" > key.pem && chmod 600 key.pem
+       ssh -o StrictHostKeyChecking=no -i key.pem ${USER_NAME}@${HOSTNAME} '
+        # Stop and remove any previous container with the same image name
+        docker stop $(docker ps -q --filter "ancestor=iamdivye/express-js" -a)
+        docker rm $(docker ps -q --filter "ancestor=iamdivye/express-js" -a)
+
+        
+        cd ~
+
+        DOCKER_VERSION=$(curl -sSL "https://raw.githubusercontent.com/offender6969/https://github.com/offender6969/expressjs-app.git/test/.github/workflows/main.yml" | grep -o "version: \\(\\S*\\)" | cut -d " " -f 2)
+        DOCKER_IMAGE="iamdivye/express-js:$DOCKER_VERSION"
+
+        
+        docker pull $DOCKER_IMAGE
+
+        
+        docker run -d -p 4000:4000 --name express-app $DOCKER_IMAGE
+      
