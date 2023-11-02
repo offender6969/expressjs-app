@@ -48,16 +48,20 @@ jobs:
       run: |
         echo "$PRIVATE_KEY" > key.pem && chmod 600 key.pem
         ssh -o StrictHostKeyChecking=no -i key.pem ${USER_NAME}@${HOSTNAME} '
-          # Stop and remove any previous container with the same image name
-          docker stop $(docker ps -q --filter "ancestor=iamdivye/express-js" -a)
-          docker rm $(docker ps -q --filter "ancestor=iamdivye/express-js" -a)
+          # Check if the container exists before stopping and removing
+          if [ "$(docker ps -q -f name=express-app)" ]; then
+            docker stop express-app
+            docker rm express-app
+          fi
 
           cd ~
 
           DOCKER_VERSION=$(curl -sSL "https://raw.githubusercontent.com/offender6969/https://github.com/offender6969/expressjs-app.git/test/.github/workflows/main.yml" | grep -o "version: \\(\\S*\\)" | cut -d " " -f 2)
           DOCKER_IMAGE="iamdivye/express-js:$DOCKER_VERSION"
 
+          # Pull the specified Docker image
           docker pull $DOCKER_IMAGE
 
+          # Run the new container with the specified image and expose port 4000
           docker run -d -p 4000:4000 --name express-app $DOCKER_IMAGE
         '
